@@ -1,15 +1,22 @@
 import { LogOutIcon } from "lucide-react"
-import { useUserContext } from "../context/user"
+// import { useUserContext } from "../context/user"
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-const Logout = () => {
-  const { setToken} = useUserContext();
+const Logout =  () => {
+  // const { setToken} = useUserContext();
   const navigate = useNavigate()
-  const onClickHandler = ()=>{
-    console.log("clicked")
-    localStorage.removeItem("token")
-    setToken(null)
-    navigate("/sign-in")
+  const onClickHandler = async ()=>{
+    console.log("clicked");
+    const response = await axios.get('http://localhost:3000/api/user/logout', {withCredentials : true})
+    if(response.data.success){
+      // setToken(null)
+      navigate("/sign-in")
+      return
+    }else{
+      toast.error("SOMETHING BROKE")
+    }
 
   }
   return (

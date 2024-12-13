@@ -6,6 +6,8 @@ import bcrypt from "bcrypt";
 import { formatDOB, genrateCollegeEmail, UserIdGenerator } from "../utils/utils";
 import transporter from "../config/nodemailer";
 import emailmsg from "../utils/emailMsg";
+import jwt from "jsonwebtoken";
+import { blacklistModel } from "../models/blacklistToken";
 interface CreateUserRequestBody {
   name?: string;
   email?: string;
@@ -17,6 +19,9 @@ interface CreateUserRequestBody {
   branch?: string;
   phone?: number;
   token?: string;
+}
+interface CustomRequest extends Request {
+  userId?: string;
 }
 
 export const createUser = async (
@@ -111,7 +116,6 @@ export const loginUser = async (
       res.status(400).json({ message: "Invalid user ", success: false });
       return;
     }
-
     const isMatch = await bcrypt.compare(password, user.password);
     // console.log(isMatch);
     if (!isMatch) {
@@ -119,11 +123,15 @@ export const loginUser = async (
       return;
     }
     const token = genrateToken(user._id);
+    res.cookie('token' , token , {
+      httpOnly : true ,
+      maxAge : 3600000,
+      sameSite :'lax',
+      secure : false
+    })
     res.json({
       success: true,
-      message: "Login in",
-      _id: user._id,
-      token: token,
+      message: "Login in and cookie has been sent",
     });
     return;
   } catch (error) {
@@ -133,9 +141,7 @@ export const loginUser = async (
   }
 };
 
-interface CustomRequest extends Request {
-  userId?: string;
-}
+
 
 export const fetchUserDetail = async (
   req: CustomRequest,
@@ -162,3 +168,23 @@ export const fetchUserDetail = async (
     },
   });
 };
+
+// logout route and saving the token in blacklist
+export const logoutUser = async (req:Request , res :Response):Promise<void>=>{
+   const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+   if(!token) {
+    res.json({success : false , message : "no token Provided" })
+    return
+   }
+   try {
+    const decoded = jwt.decode(token) as {exp :number};
+    await blacklistModel.create({
+      token : token,
+      expiry : new Date(decoded.exp * 1000)
+    });
+    res.clearCookie("token").json({success : true , message : "logout successfully"});
+    return;
+   } catch (error) {
+    res.json({success :false , message : "Something broke"});
+   }
+}

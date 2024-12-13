@@ -2,40 +2,43 @@
 import { Outlet, useNavigate } from "react-router-dom"
 import SideBar from "./components/SideBar"
 import Navbar from "./components/Navbar"
-import { useUserContext } from "./context/user";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+// import Cookies  from "js-cookie";
+
 
 function App() {
-  const { token , setToken } = useUserContext();
-  const [data , setData] = useState({})
+  const [data , setData] = useState({});
   const navigate = useNavigate();
   const fetching = async()=>{
-    const response = await axios.post(`http://localhost:3000/api/user/fetch`,{}, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    console.log(response);
-    if(response.data.success){
-      setData(response.data.data)
-      console.log(data)
-    } 
-    else if(!response.data.success){
-      setData({});
-      toast.error("Error ocuured  please login again")
-      localStorage.removeItem("token")
-      navigate("/sign-in")
+
+    try {
+      
+      const response = await axios.get(`http://localhost:3000/api/user/fetch`,
+        {withCredentials:true}
+      );
+      // console.log(response);
+      if(response.data.success){
+        setData(response.data.data)
+        // console.log(data)
+      } 
+      else if(!response.data.success){
+        console.log(response)
+        setData({});
+        toast.error("please login again");
+        return;
+      }
+    } catch{
+      // console.error('Authorization failed:', error);
+      navigate('/sign-in'); 
+      
     }
+
   }
-  useEffect(()=>{
-    const storedToken = localStorage.getItem("token");
-  if (storedToken) {
-    setToken(storedToken);
-    fetching();
-  } else if (!token) {
-    navigate("/sign-in"); 
-  }
-  },[token,setToken])
+  useEffect(() => {
+   fetching()
+  }, []);
 
   return (
     <main className="root-layout">

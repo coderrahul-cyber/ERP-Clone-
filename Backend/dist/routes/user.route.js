@@ -10,5 +10,6 @@ const auth_1 = __importDefault(require("../middlewares/auth"));
 const userRouter = express_1.default.Router();
 userRouter.post("/create", multer_1.default.single('image'), user_controller_1.createUser);
 userRouter.post("/login", user_controller_1.loginUser);
-userRouter.post('/fetch', auth_1.default, user_controller_1.fetchUserDetail);
+userRouter.get('/fetch', auth_1.default, user_controller_1.fetchUserDetail);
+userRouter.get('/logout', user_controller_1.logoutUser);
 exports.default = userRouter;

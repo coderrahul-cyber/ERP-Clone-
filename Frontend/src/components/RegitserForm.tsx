@@ -51,7 +51,7 @@ const RegitserForm = () => {
       email: "",
       password: "",
       DOB: "",
-      image: null,
+      image:"",
       phone: "",
       course: "BCA",
       branch: "Not Applicable",
@@ -258,7 +258,7 @@ const RegitserForm = () => {
             <FormItem className='formItem2'>
               <FormLabel className='formlabel2'>Branch :</FormLabel>
               <FormControl>
-                <select   {...field} disabled={branch}  className="text-sm disabled:cursor-not-allowed text-black mx-2 bg-white/20 rounded-md px-2 py-1">
+                <select   {...field} disabled={branch}   className="text-sm disabled:cursor-not-allowed text-black mx-2 bg-white/20 rounded-md px-2 py-1">
                   <option value="Not Applicable">Not Applicable</option>
                   <option value="Mechanical">Mechanical</option>
                   <option value="Computer Science">Computer Science</option>

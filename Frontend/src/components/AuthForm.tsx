@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -7,10 +6,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../components/ui/input'
 import { Button } from '../components/ui/button'
 import { Eye, EyeOff } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import {  useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { useUserContext } from '../context/user'
+// import { useUserContext } from '../context/user'
 
 const formSchema = z.object({
   userId: z.string().min(5),
@@ -19,7 +18,7 @@ const formSchema = z.object({
 
 
 const AuthForm = () => {
-  const { token, setToken } = useUserContext();
+  // const { token, setToken } = useUserContext();
   const navigate = useNavigate();
  
   const [password, setPassword] = useState('password');
@@ -43,14 +42,12 @@ const AuthForm = () => {
   
       const response = await axios.post(
         `http://localhost:3000/api/user/login`, 
-        formData
+        formData , {withCredentials : true}
       );
-    // console.log(response)
+    console.log(response)
       if (response.data.success) {
-        setToken(response.data.token); 
-        if(localStorage.getItem("token")) localStorage.clear()
-        localStorage.setItem("token", response.data.token);
         navigate(`/`); 
+        return ;
       } else {
         setError(response.data.message || "Something went wrong. Please try again.");
       }
@@ -62,11 +59,6 @@ const AuthForm = () => {
     }
   };
 
-  useEffect(() => {
-    if (token && token !== null) {
-      navigate('/')
-    }
-  }, [])
   return (
     <Form  {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="forms">

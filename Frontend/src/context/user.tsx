@@ -15,7 +15,7 @@ const UserContextProvider = ({ children }: { children: ReactNode }) => {
 
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
+    const storedToken = document.cookie;
     if (storedToken) {
       setToken(storedToken);
     }

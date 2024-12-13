@@ -1,7 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-
-// Define a custom type for Request to include `userId`
 interface CustomRequest extends Request {
   userId?: string;
 }
@@ -11,17 +9,15 @@ const authMiddleware = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const authHeader = req.headers.authorization;
-//   console.log(authHeader)
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+  if (!token) {
     res.status(401).json({ success: false, message: 'Not Authorized' });
     return; 
   }
 
-  const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, "anehgjad" ) as { _id: string };
-    req.userId = decoded._id; // Add userId to the request object
+    const decoded = jwt.verify(token, process.env.JWT_SECRET ) as { _id: string };
+    req.userId = decoded._id;
     next();
   } catch (error) {
     console.error('Token verification failed:', error);

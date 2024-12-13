@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchUserDetail = exports.loginUser = exports.createUser = void 0;
+exports.logoutUser = exports.fetchUserDetail = exports.loginUser = exports.createUser = void 0;
 const cloudinary_1 = require("cloudinary");
 const user_model_1 = require("../models/user.model");
 const jwt_1 = require("../utils/jwt");
@@ -11,6 +11,8 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const utils_1 = require("../utils/utils");
 const nodemailer_1 = __importDefault(require("../config/nodemailer"));
 const emailMsg_1 = __importDefault(require("../utils/emailMsg"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const blacklistToken_1 = require("../models/blacklistToken");
 const createUser = async (req, res) => {
     // console.log(req.body);
     const { name, email, password, DOB, course, branch, phone } = req.body;
@@ -99,11 +101,15 @@ const loginUser = async (req, res) => {
             return;
         }
         const token = (0, jwt_1.genrateToken)(user._id);
+        res.cookie('token', token, {
+            httpOnly: true,
+            maxAge: 3600000,
+            sameSite: 'lax',
+            secure: false
+        });
         res.json({
             success: true,
-            message: "Login in",
-            _id: user._id,
-            token: token,
+            message: "Login in and cookie has been sent",
         });
         return;
     }
@@ -136,3 +142,24 @@ const fetchUserDetail = async (req, res) => {
     });
 };
 exports.fetchUserDetail = fetchUserDetail;
+// logout route and saving the token in blacklist
+const logoutUser = async (req, res) => {
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        res.json({ success: false, message: "no token Provided" });
+        return;
+    }
+    try {
+        const decoded = jsonwebtoken_1.default.decode(token);
+        await blacklistToken_1.blacklistModel.create({
+            token: token,
+            expiry: new Date(decoded.exp * 1000)
+        });
+        res.clearCookie("token").json({ success: true, message: "logout successfully" });
+        return;
+    }
+    catch (error) {
+        res.json({ success: false, message: "Something broke" });
+    }
+};
+exports.logoutUser = logoutUser;
