@@ -40,6 +40,12 @@ const blacklistSchema = new mongoose_1.Schema({
         type: String,
         required: true
     },
-    expiry: { type: Date, required: true }
+    expiry: {
+        type: Date,
+        required: true,
+        default: Date.now(),
+        // Ensure the TTL index is 
+        index: { expires: 86400 },
+    },
 });
 exports.blacklistModel = mongoose_1.default.model("tokens", blacklistSchema);

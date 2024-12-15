@@ -171,20 +171,18 @@ export const fetchUserDetail = async (
 
 // logout route and saving the token in blacklist
 export const logoutUser = async (req:Request , res :Response):Promise<void>=>{
-   const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-   if(!token) {
-    res.json({success : false , message : "no token Provided" })
-    return
-   }
-   try {
-    const decoded = jwt.decode(token) as {exp :number};
-    await blacklistModel.create({
-      token : token,
-      expiry : new Date(decoded.exp * 1000)
-    });
-    res.clearCookie("token").json({success : true , message : "logout successfully"});
+  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+  
+  if (!token) {
+    res.json({ success: false, message: "No token provided" });
     return;
-   } catch (error) {
-    res.json({success :false , message : "Something broke"});
-   }
+  }
+  
+  try {
+    await blacklistModel.create({ token: token });
+    res.clearCookie("token").json({ success: true, message: "Logout successfully" });
+    return;
+  } catch (error) {
+    res.json({ success: false, message: "Something broke" });
+  }
 }

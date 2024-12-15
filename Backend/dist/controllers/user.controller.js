@@ -11,7 +11,6 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const utils_1 = require("../utils/utils");
 const nodemailer_1 = __importDefault(require("../config/nodemailer"));
 const emailMsg_1 = __importDefault(require("../utils/emailMsg"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const blacklistToken_1 = require("../models/blacklistToken");
 const createUser = async (req, res) => {
     // console.log(req.body);
@@ -144,18 +143,14 @@ const fetchUserDetail = async (req, res) => {
 exports.fetchUserDetail = fetchUserDetail;
 // logout route and saving the token in blacklist
 const logoutUser = async (req, res) => {
-    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+    const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
     if (!token) {
-        res.json({ success: false, message: "no token Provided" });
+        res.json({ success: false, message: "No token provided" });
         return;
     }
     try {
-        const decoded = jsonwebtoken_1.default.decode(token);
-        await blacklistToken_1.blacklistModel.create({
-            token: token,
-            expiry: new Date(decoded.exp * 1000)
-        });
-        res.clearCookie("token").json({ success: true, message: "logout successfully" });
+        await blacklistToken_1.blacklistModel.create({ token: token });
+        res.clearCookie("token").json({ success: true, message: "Logout successfully" });
         return;
     }
     catch (error) {
