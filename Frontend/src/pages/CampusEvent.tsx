@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom"
 import { Separator } from "../components/ui/separator";
 
 const CampusEvent = () => {
-  const { campus } = useParams();
+  const { campus = '' } = useParams();
   const data = [
     {
       "event_name": "Tech Innovators Fest",

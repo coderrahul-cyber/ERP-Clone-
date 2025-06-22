@@ -1,0 +1,63 @@
+# services:
+#   frontend:
+#     build: ./frontend
+#     ports:
+#       - "5173:5173"  # Map port 80 of the container to port 3000 on the host machine
+#     depends_on:
+#       - backend
+#     volumes:
+#       - ./frontend:/app  # Bind the local frontend folder to the container's /app
+#       - /app/node_modules  # Isolate node_modules in the container
+#     networks:
+#       - app-network
+#     environment:
+#       CHOKIDAR_USEPOLLING: "true"
+#       NODE_ENV: "development"
+#     command: npm run dev
+
+#   backend:
+#     build: ./Backend
+#     env_file:
+#       - ./Backend/.env
+#     ports:
+#       - "3000:3000"  # Map port 5000 of the container to port 5000 on the host machine
+#     volumes:
+#       - ./backend:/app  # Bind the local backend folder to the container's /app
+#       - /app/node_modules  # Isolate node_modules in the container
+#     networks:
+#       - app-network
+#     command: npx nodemon
+
+# networks:
+#   app-network:
+#     driver: bridge
+services:
+    frontend:
+      build :
+       context : ./frontend
+       target : production
+      ports :
+          - "5173:5173"
+      networks :
+        - app-network
+      depends_on :
+      - backend
+
+    backend:
+      build :
+       context : ./Backend
+      env_file :
+        - ./Backend/.env
+      ports :
+          - "3000:3000"
+      networks :
+        - app-network
+      volumes :
+        - ./Backend:/app
+        - /app/node_modules
+      
+networks:
+  app-network:
+    driver: bridge
+    
+

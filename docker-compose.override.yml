@@ -1,0 +1,34 @@
+services:
+  frontend:
+     build: 
+       context : ./frontend
+       target: development  # Use the development stage of the Dockerfile
+     ports:
+       - "5173:5173"  # Map port 80 of the container to port 3000 on the host machine
+     depends_on:
+       - backend
+     volumes:
+       - ./frontend:/app  # Bind the local frontend folder to the container's /app
+       - /app/node_modules  # Isolate node_modules in the container
+     networks:
+       - app-network
+     environment:
+       CHOKIDAR_USEPOLLING: "true"
+       NODE_ENV: "development"
+    #  command: ["npm", "run", "dev"]
+
+  backend:
+    build: 
+       context : ./Backend
+       target : development  # Use the development stage of the Dockerfile
+    env_file:
+       - ./Backend/.env
+    ports:
+       - "3000:3000"  # Map port 5000 of the container to port 5000 on the host machine
+    volumes:
+       - ./backend:/app  # Bind the local backend folder to the container's /app
+       - /app/node_modules  # Isolate node_modules in the container
+    environment:
+        CHOKIDAR_USEPOLLING: "true"
+        NODE_ENV: "development"
+    #  command: ["npx", "nodemon"]

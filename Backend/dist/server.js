@@ -22,7 +22,7 @@ app.use(express_1.default.urlencoded({ extended: true }));
 //api endpoints
 app.use("/api/user", user_route_1.default);
 app.get('/', (req, res) => {
-    res.send('Hello');
+    res.send('Hello World!');
 });
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

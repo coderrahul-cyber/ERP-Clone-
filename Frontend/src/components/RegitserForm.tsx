@@ -51,7 +51,7 @@ const RegitserForm = () => {
       email: "",
       password: "",
       DOB: "",
-      image:"",
+      image:undefined,
       phone: "",
       course: "BCA",
       branch: "Not Applicable",

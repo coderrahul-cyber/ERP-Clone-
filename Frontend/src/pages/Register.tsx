@@ -1,5 +1,4 @@
 import RegitserForm from "../components/RegitserForm"
-import { ToastContainer} from "react-toastify"
 
 const Register = () => {
   return (
