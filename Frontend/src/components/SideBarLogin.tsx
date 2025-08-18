@@ -10,7 +10,7 @@ const SideBarLogin = () => {
         <h1 className="text-3xl font-petrols">Student Portal</h1>
        </div>
        <Separator className="border-white border-[1px] my-2" />
-       <p className="px-2 text-balance font-medium">
+       <p className="px-2 text-balance text-center font-medium">
        Welcome to ERP(Student Portal) , a student-friendly platform for managing academics in one place. Access attendance, grades, schedules, and announcements with ease, ensuring you stay organized and focused on your studies.
        </p>
 
